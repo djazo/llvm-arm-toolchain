@@ -6,10 +6,10 @@ RUN mkdir /src ; git clone https://github.com/ARM-software/LLVM-embedded-toolcha
 RUN git config --global user.email "nerd@embeddedreality.com" ; git config --global user.name "Embeddedreality Nerd"
 RUN mkdir /src/build; cd /src/build; cmake -G Ninja ../LLVM-embedded-toolchain-for-Arm
 RUN cd /src/build; ninja llvm-toolchain ; ninja package-llvm-toolchain
-RUN mkdir /opt; tar xjf $(ls /src/build/*.tar.gz)
+RUN mkdir -p /opt; cd /opt; tar xf $(ls /src/build/LLVM*) --strip-components 1
 
 FROM alpine:3.19
 
 RUN apk update; apk add ninja meson cmake
 COPY --from=bob /opt /opt
-
+ENV PATH="/opt/toolchain/bin:${PATH}"
